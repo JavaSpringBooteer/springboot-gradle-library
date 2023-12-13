@@ -1,0 +1,100 @@
+buildscript {
+   // apply from: 'gradle/repositories.gradle'
+    dependencies {
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.21.0"
+    }
+}
+plugins {
+    id "com.diffplug.spotless" version "6.8.0"
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.springframework.boot' version '3.2.0' apply false
+    id "org.openapi.generator" version "6.0.0"
+    id "org.hidetake.swagger.generator" version "2.19.2"
+}
+
+ext.versions = [
+        springBoot        : '3.2.0',
+        springCloud       : '2022.0.4',
+        micrometer        : '1.10.3',
+        commonLogging     : '1.2',
+]
+
+allprojects {
+    apply plugin: 'io.spring.dependency-management'
+    group 'com.springboot.web.library'
+    version = '0.0.3-SNAPSHOT'
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${versions.springBoot}")
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${versions.springCloud}")
+        }
+        dependencies {
+            //dependency group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: versions.micrometer
+            dependency group: 'commons-logging', name: 'commons-logging', version: versions.commonLogging
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: "com.diffplug.spotless"
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+        withSourcesJar()
+    }
+
+    //https://dev.to/ankityadav33/standardize-code-formatting-with-spotless-2bdh
+    spotless {
+        java {
+            //googleJavaFormat("1.15.0")
+            target fileTree('.') {
+                include '**/*.java'
+                exclude '**/build/**', '**/build-*/**'
+            }
+            importOrder()
+            toggleOffOn()
+            palantirJavaFormat()
+            removeUnusedImports()
+            trimTrailingWhitespace()
+            endWithNewline()
+        }
+    }
+
+    afterEvaluate {
+        def spotless = tasks.findByName('spotlessApply')
+        if (spotless) {
+            tasks.withType(JavaCompile) {
+                finalizedBy(spotless)
+            }
+
+        }
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter'
+        compileOnly 'org.projectlombok:lombok:1.18.22'
+        annotationProcessor 'org.projectlombok:lombok:1.18.22'
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+    jar {
+        enabled = true
+        archiveClassifier=''
+    }
+}
+
+
+

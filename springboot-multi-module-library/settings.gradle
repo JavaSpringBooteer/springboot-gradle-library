@@ -1,0 +1,5 @@
+rootProject.name = 'springboot-multi-module-library'
+
+include 'module1'
+include 'module-commons'
+include 'module2'

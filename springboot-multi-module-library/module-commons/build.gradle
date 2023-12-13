@@ -1,0 +1,25 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    compileOnly 'com.fasterxml.jackson.core:jackson-databind:2.16.0'
+    compileOnly 'com.fasterxml.jackson.core:jackson-core:2.16.0'
+    compileOnly 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+    testImplementation 'org.projectlombok:lombok:1.18.30'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}

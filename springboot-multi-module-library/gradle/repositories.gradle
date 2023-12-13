@@ -1,0 +1,10 @@
+repositories {
+    mavenLocal()
+    maven {
+        url "${zoom_rt_repo_url}"
+        credentials {
+            username = "${zoom_rt_user}"
+            password = "${zoom_rt_password}"
+        }
+    }
+}
